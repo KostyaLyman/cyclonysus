@@ -9,7 +9,7 @@ setup(name='cyclonysus',
       version='0.0.1',
       description="Representative Cycles doesn't have to be hard.",
       long_description=long_description,
-      long_description_content_type="text/markdown",	
+      long_description_content_type="text/markdown",
       author='Nathaniel Saul',
       author_email='nathaniel.saul@wsu.edu',
       url='https://github.com/sauln/cyclonysus',
@@ -18,7 +18,7 @@ setup(name='cyclonysus',
       include_package_data=True,
       install_requires=[
         # For the library
-        'dionysus',
+        'dionysus @ git+https://github.com/mrzv/dionysus.git#egg=dionysus',
         'numpy',
 
         # For the examples
@@ -26,7 +26,7 @@ setup(name='cyclonysus',
         'scikit-learn',
         'matplotlib'
       ],
-      python_requires='>=2.7,!=3.1,!=3.2,!=3.3',
+      python_requires='>=3.6',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
@@ -36,11 +36,9 @@ setup(name='cyclonysus',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
       ],
       keywords='persistent homology, representative cycles'
      )
