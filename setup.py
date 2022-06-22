@@ -20,13 +20,14 @@ setup(name='cyclonysus',
         # For the library
         'dionysus @ git+https://github.com/mrzv/dionysus.git#egg=dionysus',
         'numpy',
+        'networkx',
 
         # For the examples
         'scipy',
         'scikit-learn',
         'matplotlib'
       ],
-      python_requires='>=3.6',
+      python_requires='>=3.8',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
@@ -36,9 +37,8 @@ setup(name='cyclonysus',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
       ],
       keywords='persistent homology, representative cycles'
      )
