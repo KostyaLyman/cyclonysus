@@ -87,6 +87,15 @@ def get_min_weight(G, weight='weight'):
     return m
 
 
+def get_max_dist(D):
+    if len(D) == 0:
+        return 0
+
+    values = sorted(np.unique(np.asarray(D)))
+    M = values[-2] if np.isinf(values[-1]) else values[-1]
+    return M
+
+
 def set_reversed_weights(G, weight='weight', target_weight=None):
     """
     Reverses the order of edge weights:
