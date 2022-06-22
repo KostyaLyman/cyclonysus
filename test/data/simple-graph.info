@@ -1,0 +1,4 @@
+name="simple-graph"
+nodes=9
+edges=14
+edgelist.csv.columns=["source", "target", "weight"]
