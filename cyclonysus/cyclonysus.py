@@ -1,6 +1,68 @@
+import warnings
 import numpy as np
-import dionysus
+import networkx as nx
+import dionysus as ds
 
+from scipy.spatial.distance import squareform
+from typing import List, Set, Tuple, Dict, Union
+from datatypes import Number, Node, Edge, Vertex
+
+import graphutils as gu
+import bacchus as bs
+
+
+###############################################################################
+#     RIPS FILTRATION FROM GRAPH OR MATRIX
+###############################################################################
+def fill_rips_from_graph(G, **kwargs):
+    # OPTIONS -------------------------------------------------------
+    distance_func = kwargs.get('distance_func', gu.get_distance_matrix)
+    weight = kwargs.setdefault('weight', 'weight')      # edge field that contains weights
+    retdist = kwargs.get('retdist', False)              # return distance matrix
+
+    # LOGIC ---------------------------------------------------------
+    if G.is_directed():
+        warnings.warn(
+            "The graph needs to be undirected for the construction of a Rips complex"
+        )
+
+    dist_matrix = distance_func(G, **kwargs)
+    simplices = fill_rips_from_distances(dist_matrix, **kwargs)
+
+    # return the distance matrix
+    if retdist:
+        return simplices, dist_matrix
+
+    return simplices
+
+
+def fill_rips_from_distances(dist, **kwargs):
+    # OPTIONS -------------------------------------------------------
+    maxdim = kwargs.get('maxdim', 1)
+    thresh = kwargs.get('thresh', None)
+    values = sorted(np.unique(np.asarray(dist)))
+
+    # LOGIC ---------------------------------------------------------
+    if dist.shape[0] != dist.shape[1]:
+        raise ValueError("The data should be a square distance matrix")
+
+    if len(values) <= 1:
+        raise ValueError(f"Distance matrix has one unique value, vals={values}")
+
+    if not thresh:
+        # values are already sorted
+        thresh = values[-2] if np.isinf(values[-1]) else values[-1]
+
+    # Generate rips filtration
+    dist = squareform(dist)
+    simplices = ds.fill_rips(dist, maxdim + 1, thresh)
+    simplices = bs.SlicingFiltration(simplices)
+    return simplices
+
+
+###############################################################################
+#     CYCLER
+###############################################################################
 class Cycler:
     """ Build a rips diagram of the data and and provide access to cycles.
 
@@ -21,30 +83,30 @@ class Cycler:
         """ Generate Rips filtration and cycles for data.
         """
 
-       # Generate rips filtration 
-        maxeps = np.max(data.std(axis=0)) # TODO: is this the best choice?
-        simplices = dionysus.fill_rips(data, self.order+1 , maxeps)
+        # Generate rips filtration
+        maxeps = np.max(data.std(axis=0))   # TODO: is this the best choice?
+        simplices = ds.fill_rips(data, self.order+1 , maxeps)
         
         self.from_simplices(simplices)
 
 
     def from_simplices(self, simplices):
 
-        if not isinstance(simplices, dionysus.Filtration):
-            simplices = dionysus.Filtration(simplices)
+        if not isinstance(simplices, ds.Filtration):
+            simplices = ds.Filtration(simplices)
 
 
  
         # import pdb; pdb.set_trace()
         # Add cone point to force homology to finite length; Dionysus only gives out cycles of finite intervals
-        spxs = [dionysus.Simplex([-1])] + [c.join(-1) for c in simplices]
+        spxs = [ds.Simplex([-1])] + [c.join(-1) for c in simplices]
         for spx in spxs:
             spx.data = 1
             simplices.append(spx)
 
         # Compute persistence diagram
-        persistence = dionysus.homology_persistence(simplices)
-        diagrams = dionysus.init_diagrams(persistence, simplices)
+        persistence = ds.homology_persistence(simplices)
+        diagrams = ds.init_diagrams(persistence, simplices)
 
         # Set all the results
         self._filtration = simplices
